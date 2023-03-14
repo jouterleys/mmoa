@@ -3,3 +3,6 @@
 .RData
 .Ruserdata
 ckpts/
+*.cmz
+*.cmx
+example-data/*.txt
