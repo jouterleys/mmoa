@@ -38,7 +38,7 @@
         - select 'data_c3d' folder when prompted
 
     Output:
-		data_c3d
+		data_v3d
 			S000001
 				S000001_Walk_001.c3d
 				S000001_Walk_001_filt.c3d
@@ -46,6 +46,7 @@
 				S000001_Walk_002_filt.c3d
 				S000001_Run_001.c3d
 				S000001_Run_001_filt.c3d
+			S000002
 				S000002_Walk_001.c3d
 				S000002_Walk_001_filt.c3d
 				S000002_Walk_002.c3d
