@@ -2,9 +2,11 @@ site_name: Markerless for Multicentre Orthopaedic Assessment
 theme:
     icon:
         logo: material/bone
+    favicon: images/bone.png
     name: material
     language: en
     features:
+    - navigation.tabs
     - navigation.sections
     - toc.integrate
     - navigation.top
