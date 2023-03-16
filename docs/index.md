@@ -1,10 +1,10 @@
-# MMOA
-	WIP
-Contact me for updates Or submit an [issue](https://github.com/jouterleys/mmoa) in the Repo
+# 
 
 ## Overview
+Contact me for updates Or submit an [issue](https://github.com/jouterleys/mmoa) in the Repo
+
 This documentation is for the processsing scripts found in the [MMOA GitHub Repo](https://github.com/jouterleys/mmoa).
-In that repo are scripts for data management and processing for the MMOA project. The purpose of this repo and documenation is to provide a unified processing approach for members of the project across different collection sites.
+These scripts are for data management and processing for the MMOA project. The purpose of this repo and documenation is to provide a unified processing approach for members of the project across different collection sites.
 
 ## Data Pipeline
 A solid Data Pipeline is key to this project and can briefly be broken down into the following steps: 
