@@ -46,19 +46,18 @@ def remove_empty_dir(path):
 def remove_empty_dirs(path):
     for root, dirnames, filenames in os.walk(path, topdown = False):
         for dirname in dirnames:
-            #remove_empty_dir(os.path.readpath(os.path.join(root, dirname)))
             remove_empty_dir(os.path.realpath(os.path.join(root, dirname)))
 
 
 #%% Options Flags
 
-# Extract only sony
+# Extract only sony (looks for sony in the file path)
 sony_only_flag = False
 
 # Copy only filtered c3ds
 filt_only_flag = True
 
-# Include '_filt' in new filenames
+# Keep '_filt' in new filenames
 filt_filename_flag = False
 
 # Copy only person 0

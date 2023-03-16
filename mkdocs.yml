@@ -1,0 +1,29 @@
+site_name: Markerless for Multicentre Orthopaedic Assessment
+theme:
+    icon:
+        logo: material/bone
+    name: material
+    language: en
+    features:
+    - navigation.tabs
+    - navigation.sections
+    - toc.integrate
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - content.code.annotation
+    - content.code.copy
+    palette:
+    - scheme: default
+      toggle:
+        icon: material/brightness-4 
+        name: Switch to dark mode
+      primary: deep purple
+      accent: pink
+    - scheme: slate 
+      toggle:
+        icon: material/brightness-7
+        name: Switch to light mode    
+      primary: deep purple
+      accent: lime
