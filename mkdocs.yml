@@ -6,10 +6,8 @@ theme:
     name: material
     language: en
     features:
-    - navigation.tabs
     - navigation.sections
     - toc.integrate
-    - navigation.top
     - search.suggest
     - search.highlight
     - content.tabs.link
