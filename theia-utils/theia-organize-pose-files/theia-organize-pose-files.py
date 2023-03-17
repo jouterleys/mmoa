@@ -190,16 +190,11 @@ for file in filelist:
     # creating new name
     if '_filt_' in file:
         if filt_filename_flag:
-            #newname = subjname + '_' + taskname + '_' + trialname + '_filt.c3d'
             newname = subjname + '_' + taskname + '_' + trialname + filt_c3d_suffix
         else:
-            #newname = subjname + '_' + taskname + '_' + trialname + '.c3d'
-            #newname = subjname + '_' + taskname + '_' + trialname + filename_no_filt
             newname = subjname + '_' + taskname + '_' + trialname + c3d_suffix
 
     else:                 
-        #newname = subjname + '_' + taskname + '_' + trialname + '.c3d'
-        #newname = subjname + '_' + taskname + '_' + trialname + filename
         newname = subjname + '_' + taskname + '_' + trialname + c3d_suffix
 
     
