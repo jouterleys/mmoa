@@ -19,19 +19,19 @@ Each step will generally involve the execution of codes/scripts across a few dif
 ## Data Layout
 
     data
-		...session-date
-			...subjectencounter
+		... session-date
+			... subjectencounter
 				... action
 					... trial
     data_c3d
-		...session-date
-			...subjectencounter
+		... session-date
+			... subjectencounter
 				... action
 					... trial
 	data_workspace
-		...session-date
-			...subjectencounter
+		... session-date
+			... subjectencounter
 				... action
 					... trial
 	data_v3d
-		...subjectencounter
+		... subjectencounter

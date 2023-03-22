@@ -1,6 +1,6 @@
-#%% Theia3D Pose File Rename and Organize
+# Theia3D Pose File Rename and Organize
 
-# organize-rename-pose-files.py
+# organize-rename-pose-files-refactor.py
 # author(s): Rob Kanko and Jereme Outerleys
 # created: March 2020
 # refactored for MMOA project
@@ -10,7 +10,7 @@
 processing video data in Theia3D, intended for general data collection use
 
  Input: directory where data to be renamed/reformatted is located, assumes it has the structure:
-     - [studyname_c3d folder]               ... ends with "_c3d"
+     - [studyname_c3d folder]               
           > [subject folder]                
                > [task folder]              
                     > [trial folder]        
@@ -19,7 +19,7 @@ processing video data in Theia3D, intended for general data collection use
 
 Output: restructured directory, with renamed files:
     - [studyname_v3d folder]
-         - [subject folder]
+         > [subject folder]
              > subject_task_trial.c3d
              > subject_task_trial_filt.c3d
              > ... 
