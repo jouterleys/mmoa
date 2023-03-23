@@ -35,20 +35,6 @@ root = tkinter.Tk()
 root.withdraw()
 root.call('wm', 'attributes', '.', '-topmost', True)
 
-#%% Functions
-
-def remove_empty_dir(path):
-    try:
-        os.rmdir(path)
-    except OSError:
-        pass
-
-def remove_empty_dirs(path):
-    for root, dirnames, filenames in os.walk(path, topdown = False):
-        for dirname in dirnames:
-            remove_empty_dir(os.path.realpath(os.path.join(root, dirname)))
-
-
 #%% Options Flags
 
 # Extract only sony (looks for sony in the file path)
@@ -58,7 +44,7 @@ sony_only_flag = False
 filt_only_flag = True
 
 # Keep '_filt' in new filenames
-filt_filename_flag = False
+filt_filename_flag = True
 
 # Copy only person 0
 person_zero_flag = True
@@ -80,8 +66,32 @@ if replace_dir_flag and not delete_dir_flag:
         delete_dir_flag = True
     else:
         sys.exit()
-
+        
 #%% Functions
+
+def remove_empty_dir(path):
+    try:
+        os.rmdir(path)
+    except OSError:
+        pass
+
+def remove_empty_dirs(path):
+    for root, dirnames, filenames in os.walk(path, topdown = False):
+        for dirname in dirnames:
+            remove_empty_dir(os.path.realpath(os.path.join(root, dirname)))
+            
+# checks if files exist to not overwrite and to make the directory if it doesn't exist
+def safe_move(src_file, dst_file):
+    #src_file = old_filename
+    #dst_file = new_filename
+    if os.path.isfile(dst_file):
+        print(f"File {dst_file} already exists. Skipping...")
+    else:
+        if not os.path.isdir(os.path.dirname(dst_file)):
+            os.makedirs(os.path.dirname(dst_file))
+        shutil.copy(src_file, dst_file)
+        print(f"File {dst_file} created.")
+
 
 def get_list_of_files(dirName, fullpaths=True, search_subfolders=True):
     """Get a list of all files and folders within the provided directory."""
@@ -125,18 +135,22 @@ def get_list_of_files(dirName, fullpaths=True, search_subfolders=True):
 
 #%% Get Directory
 # ask user to select [studyname]_c3d folder that will be reformatted
-projdir = filedialog.askdirectory().replace('/','\\')
-
+projdir = filedialog.askdirectory()
+# maek sure the seperators are correct for the system.
+projdir = os.path.normpath(projdir)
 # make sure we create a path at the same level as the _c3d folder
-c3d_level = projdir.split("\\")
+c3d_level = projdir.split(os.path.sep)
 # find index of file path that contains _c3d, searching backwards
 c3d_level_index = 0
-for level in reversed(c3d_level):
+#for i, level in enumerate(reversed(c3d_level)):
+for i, level in reversed(list(enumerate(c3d_level))):
     if "_c3d" in level:
-        c3d_level_index = level.find("_c3d")
+        #c3d_level_index = level.find("_c3d")
+        c3d_level_index = i
+        break
 
 if c3d_level_index != 0:
-    c3d_level_path = "\\".join(c3d_level[0:c3d_level_index])
+    c3d_level_path = os.path.sep.join(c3d_level[0:c3d_level_index])
     last_folder_name = c3d_level[c3d_level_index]
     last_folder_name = last_folder_name.replace("_c3d", "_v3d")
     data_v3d_path = os.path.join(c3d_level_path, last_folder_name)
@@ -151,7 +165,7 @@ else:
 # create a list of files within directory
 filelist = get_list_of_files(projdir, fullpaths=True, search_subfolders=True)
 
-# remove spaaces in filelist
+# remove spaces in filelist
 # filelist = [file.replace(" ", "") for file in filelist]
 
 # Extract only c3ds
@@ -177,7 +191,7 @@ if force_merge_flag:
 for file in filelist:
     #file = filelist[0]
     # getting file info
-    filenameparts = file.split('\\')
+    filenameparts = file.split(os.path.sep)
             
     filename = filenameparts[-1]
     trialname = filenameparts[-2]
@@ -205,17 +219,10 @@ for file in filelist:
     else:
         v3d_path = data_v3d_path
     
-    print(v3d_path)
-
-    # creating v3d-data folder, for all options
-    if not os.path.isdir(v3d_path):
-        os.makedirs(v3d_path)
     newfile = os.path.join(v3d_path,newname)
     
-    # Probably want to make sure we check to see if file exists to not
-    # overwrite?
     # copy+rename the file
-    shutil.copy(file, newfile)
+    safe_move(file, newfile)
     
     # Delete c3d directory flag
     if delete_dir_flag:
