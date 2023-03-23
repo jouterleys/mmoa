@@ -136,16 +136,14 @@ def get_list_of_files(dirName, fullpaths=True, search_subfolders=True):
 #%% Get Directory
 # ask user to select [studyname]_c3d folder that will be reformatted
 projdir = filedialog.askdirectory()
-# maek sure the seperators are correct for the system.
+# make sure the seperators are correct for the system.
 projdir = os.path.normpath(projdir)
 # make sure we create a path at the same level as the _c3d folder
 c3d_level = projdir.split(os.path.sep)
 # find index of file path that contains _c3d, searching backwards
 c3d_level_index = 0
-#for i, level in enumerate(reversed(c3d_level)):
 for i, level in reversed(list(enumerate(c3d_level))):
     if "_c3d" in level:
-        #c3d_level_index = level.find("_c3d")
         c3d_level_index = i
         break
 
