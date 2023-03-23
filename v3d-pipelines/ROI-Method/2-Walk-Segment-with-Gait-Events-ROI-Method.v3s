@@ -4,6 +4,7 @@ Select_Active_File
 ! /SUBJECT_TAGS=NO_SUBJECT
 ;
 
+! Set the axis of travel (X or Y) 
 Set_Pipeline_Parameter
 /PARAMETER_NAME=axis_of_travel
 /PARAMETER_VALUE=X
@@ -14,6 +15,7 @@ Set_Pipeline_Parameter
 ! /MULTI_PASS=FALSE
 ;
 
+! Set the region of interest (in meters)
 Metric_Explicit
 ! /RESULT_METRIC_FOLDER=PROCESSED
 /RESULT_METRIC_NAME=END_1_Pos
@@ -34,7 +36,6 @@ Event_Delete
 ! /TIME=
 ;
 
-!------------------------------------------------------- PUTTING HEEL LANDMARKS IN PELVIS FRAME
 Compute_Model_Based_Data
 /RESULT_NAME=RHEEL_WRT_RPV
 /FUNCTION=TARGET_PATH
