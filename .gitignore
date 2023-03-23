@@ -6,4 +6,4 @@ ckpts/
 *.cmz
 *.cmx
 example-data/*.txt
-*theia-organize-pose-files-refactor.py
+*/theia-organize-pose-files-refactor.py
