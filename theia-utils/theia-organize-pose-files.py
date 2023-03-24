@@ -31,9 +31,6 @@ import tkinter
 from tkinter import filedialog
 import shutil
 import sys
-root = tkinter.Tk()
-root.withdraw()
-root.call('wm', 'attributes', '.', '-topmost', True)
 
 #%% Options Flags
 
@@ -68,22 +65,23 @@ if replace_dir_flag and not delete_dir_flag:
         sys.exit()
         
 #%% Functions
+def get_file_directory():
+    """ ask user to select [studyname]_c3d folder that will be reformatted
+     and correct for operating system specific path separator """
+     
+    # needed for tinker dialog to not hang
+    root = tkinter.Tk()
+    root.withdraw()
+    root.call('wm', 'attributes', '.', '-topmost', True)
+    projdir = filedialog.askdirectory()
+    projdir = os.path.normpath(projdir)
+    return projdir   
 
-def remove_empty_dir(path):
-    try:
-        os.rmdir(path)
-    except OSError:
-        pass
-
-def remove_empty_dirs(path):
-    for root, dirnames, filenames in os.walk(path, topdown = False):
-        for dirname in dirnames:
-            remove_empty_dir(os.path.realpath(os.path.join(root, dirname)))
             
 # checks if files exist to not overwrite and to make the directory if it doesn't exist
 def safe_move(src_file, dst_file):
-    #src_file = old_filename
-    #dst_file = new_filename
+    """checks if files exist to not overwrite and to make the directory if it doesn't exist"""
+
     if os.path.isfile(dst_file):
         print(f"File {dst_file} already exists. Skipping...")
     else:
@@ -91,6 +89,29 @@ def safe_move(src_file, dst_file):
             os.makedirs(os.path.dirname(dst_file))
         shutil.copy(src_file, dst_file)
         print(f"File {dst_file} created.")
+
+def make_data_v3d_folder_path(dirName):
+    """create output folder (*_v3d) at the same level as the *_c3d folder"""
+    
+    c3d_level = dirName.split(os.path.sep)
+    # find index of file path that contains _c3d, searching backwards
+    c3d_level_index = 0
+    for i, level in reversed(list(enumerate(c3d_level))):
+        if "_c3d" in level:
+            c3d_level_index = i
+            break
+
+    if c3d_level_index != 0:
+        c3d_level_path = os.path.sep.join(c3d_level[0:c3d_level_index])
+        last_folder_name = c3d_level[c3d_level_index]
+        last_folder_name = last_folder_name.replace("_c3d", "_v3d")
+        data_v3d_path = os.path.join(c3d_level_path, last_folder_name)
+
+    else:
+        # if no *_c3d found just create a data_v3d in the dirName provided
+        data_v3d_path = os.path.join(dirName, "data_v3d")
+    
+    return data_v3d_path
 
 
 def get_list_of_files(dirName, fullpaths=True, search_subfolders=True):
@@ -131,32 +152,25 @@ def get_list_of_files(dirName, fullpaths=True, search_subfolders=True):
     else:
         outFiles = [os.path.split(file)[1] for file in allFiles]
         return outFiles
+    
+def remove_empty_dir(path):
+    try:
+        os.rmdir(path)
+    except OSError:
+        pass
 
-
+def remove_empty_dirs(path):
+    for root, dirnames, filenames in os.walk(path, topdown = False):
+        for dirname in dirnames:
+            remove_empty_dir(os.path.realpath(os.path.join(root, dirname)))
+            
+            
 #%% Get Directory
 # ask user to select [studyname]_c3d folder that will be reformatted
-projdir = filedialog.askdirectory()
-# make sure the seperators are correct for the system.
-projdir = os.path.normpath(projdir)
-# make sure we create a path at the same level as the _c3d folder
-c3d_level = projdir.split(os.path.sep)
-# find index of file path that contains _c3d, searching backwards
-c3d_level_index = 0
-for i, level in reversed(list(enumerate(c3d_level))):
-    if "_c3d" in level:
-        c3d_level_index = i
-        break
+projdir = get_file_directory()
 
-if c3d_level_index != 0:
-    c3d_level_path = os.path.sep.join(c3d_level[0:c3d_level_index])
-    last_folder_name = c3d_level[c3d_level_index]
-    last_folder_name = last_folder_name.replace("_c3d", "_v3d")
-    data_v3d_path = os.path.join(c3d_level_path, last_folder_name)
-
-else:
-    data_v3d_path = os.path.join(projdir, "data_v3d")
-
-
+# create output *_v3d folder path
+data_v3d_path = make_data_v3d_folder_path(projdir)
 
 #%% Rename and Organize
 
@@ -187,7 +201,7 @@ if force_merge_flag:
    
 # organize and rename, if only person 0 available or only keeping person 0
 for file in filelist:
-    #file = filelist[0]
+
     # getting file info
     filenameparts = file.split(os.path.sep)
             
@@ -195,11 +209,13 @@ for file in filelist:
     trialname = filenameparts[-2]
     taskname = filenameparts[-3]
     subjname = filenameparts[-4]
-    projname = filenameparts[-5].replace("_c3d", "")
-    datefolder = filenameparts[-6]
+
     c3d_suffix = '.c3d'
     filt_c3d_suffix = '_filt.c3d'
+    
     # creating new name
+    
+    
     if '_filt_' in file:
         if filt_filename_flag:
             newname = subjname + '_' + taskname + '_' + trialname + filt_c3d_suffix
@@ -213,10 +229,10 @@ for file in filelist:
     # creating nested subject folders, or not
     if nested_subject_flag:
         v3d_path = os.path.join(data_v3d_path,subjname)
-
     else:
         v3d_path = data_v3d_path
     
+    # new file name 
     newfile = os.path.join(v3d_path,newname)
     
     # copy+rename the file
