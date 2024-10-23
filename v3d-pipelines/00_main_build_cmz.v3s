@@ -191,13 +191,6 @@ Open_Report_Template
 ! /SET_PROMPT=Open report template
 ;
 
-! location TAG
-Assign_Tags_To_Files
-/MOTION_FILE_NAMES=ALL_FILES
-! /QUERY=
-/TAGS=HMRL
-;
-
 ! save the cmz
 File_Save_As
 /FILE_NAME=::ROOTFOLDER&::CMZ_NAME&.cmz
