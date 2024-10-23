@@ -163,25 +163,25 @@ Select_Active_File
 
 ! determine_region_of_interest for segmentation
 Call_Script
-/SCRIPT_FILE_NAME=determine_region_of_interest.v3s
+/SCRIPT_FILE_NAME=1_determine_region_of_interest.v3s
 /SCRIPT_PATH=::CALL_SCRIPT_SCRIPT_PATH
 ;
 
 ! determine gait events
 Call_Script
-/SCRIPT_FILE_NAME=gait_events_zeni_velocity.v3s
+/SCRIPT_FILE_NAME=2_gait_events_zeni_velocity.v3s
 /SCRIPT_PATH=::CALL_SCRIPT_SCRIPT_PATH
 ;
 
 ! compute_temporal_distance
 Call_Script
-/SCRIPT_FILE_NAME=compute_temporal_distance.v3s
+/SCRIPT_FILE_NAME=3_compute_temporal_distance.v3s
 /SCRIPT_PATH=::CALL_SCRIPT_SCRIPT_PATH
 ;
 
 ! compute_model_based
 Call_Script
-/SCRIPT_FILE_NAME=compute_model_based.v3s
+/SCRIPT_FILE_NAME=4_compute_model_based.v3s
 /SCRIPT_PATH=::CALL_SCRIPT_SCRIPT_PATH
 ;
 
@@ -207,7 +207,7 @@ File_Save_As
 
 ! export_data_to_ascii_file
 Call_Script
-/SCRIPT_FILE_NAME=export_data_to_ascii_file.v3s
+/SCRIPT_FILE_NAME=5_export_data_to_ascii_file.v3s
 /SCRIPT_PATH=::CALL_SCRIPT_SCRIPT_PATH
 ;
 
