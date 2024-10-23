@@ -1,0 +1,60 @@
+!Set Call_Script path
+Set_Pipeline_Parameter_To_Folder_Path
+/PARAMETER_NAME=CALL_SCRIPT_SCRIPT_PATH
+/PARAMETER_VALUE=C:\Your\Path\To\Folder\with\Scripts
+;
+
+
+Select_Active_File
+/FILE_NAME=Walk+FastWalk+SlowWalk
+! /QUERY=
+;
+
+!!! REMOVE LATER
+! FIX JOINT POSITIONS
+! Remove OLD JOINT_POSITION FOLDER
+Delete_Folder
+/SIGNAL_TYPES=DERIVED
+/FOLDER=JOINT_POSITION
+;
+
+! Choose to remove BAD events?
+!Event_Delete
+!/EVENT_NAME=LBAD+RBAD
+!;
+
+! Silence if don't want to rebuild ROI
+! determine_region_of_interest for segmentation
+!Call_Script
+!/SCRIPT_FILE_NAME=determine_region_of_interest.v3s
+!! /SCRIPT_PATH=::CALL_SCRIPT_SCRIPT_PATH
+!;
+
+! determine gait events
+Call_Script
+/SCRIPT_FILE_NAME=gait_events_zeni_velocity.v3s
+/SCRIPT_PATH=::CALL_SCRIPT_SCRIPT_PATH
+;
+
+! compute_temporal_distance
+Call_Script
+/SCRIPT_FILE_NAME=compute_temporal_distance.v3s
+/SCRIPT_PATH=::CALL_SCRIPT_SCRIPT_PATH
+;
+
+! compute_model_based
+Call_Script
+/SCRIPT_FILE_NAME=compute_model_based.v3s
+/SCRIPT_PATH=::CALL_SCRIPT_SCRIPT_PATH
+;
+
+! export_data_to_ascii_file
+Call_Script
+/SCRIPT_FILE_NAME=export_data_to_ascii_file.v3s
+/SCRIPT_PATH=::CALL_SCRIPT_SCRIPT_PATH
+;
+
+File_Save
+! /SET_PROMPT=Save CMO file
+;
+

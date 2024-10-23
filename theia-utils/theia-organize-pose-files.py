@@ -44,7 +44,7 @@ filt_only_flag = True
 filt_filename_flag = True
 
 # Copy only person 0
-person_zero_flag = True
+person_zero_flag = False
 
 # Nested Subject Folders
 nested_subject_flag = True
@@ -73,7 +73,7 @@ def get_file_directory():
     root = tkinter.Tk()
     root.withdraw()
     root.call('wm', 'attributes', '.', '-topmost', True)
-    projdir = filedialog.askdirectory()
+    projdir = filedialog.askdirectory(title='Select _c3d directory')
     projdir = os.path.normpath(projdir)
     return projdir   
 

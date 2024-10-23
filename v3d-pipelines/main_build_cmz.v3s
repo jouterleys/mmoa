@@ -1,0 +1,227 @@
+File_New
+;
+
+!Set Call_Script path
+Set_Pipeline_Parameter_To_Folder_Path
+/PARAMETER_NAME=CALL_SCRIPT_SCRIPT_PATH
+/PARAMETER_VALUE=C:\Your\Path\To\Folder\with\Scripts
+;
+
+! Prompt the user for the folder within which the subject folders are located (i.e. C:\Your\Path\To\data_v3d
+Set_Pipeline_Parameter_To_Folder_Path
+/PARAMETER_NAME=FOLDER
+/PARAMETER_VALUE=
+! /PARAMETER_VALUE_MOTION_FILE=
+! /PARAMETER_VALUE_SEARCH_FOR=
+! /PARAMETER_VALUE_REPLACE_WITH=
+! /PARAMETER_VALUE_APPEND=
+/SET_PROMPT=Select data_v3d folder to process C3Ds
+;
+
+! Creates a pipeline parameter that is a list of folders that contain files with ".c3d" in their name
+Set_Pipeline_Parameter_To_List_Of_Files
+/PARAMETER_NAME=FOLDER_LIST
+/FOLDER=::FOLDER
+/SEARCH_SUBFOLDERS=TRUE
+/FILE_MASK=*.c3d
+! /ALPHABETIZE=TRUE
+/RETURN_FOLDER_NAMES=TRUE
+;
+
+! Looping through each of the subject folders in the above list
+For_Each
+/ITERATION_PARAMETER_NAME=ROOTFOLDER
+! /ITERATION_PARAMETER_COUNT_NAME=
+/ITEMS=::FOLDER_LIST
+;
+
+Set_Pipeline_Parameter_To_List_Of_Files
+/PARAMETER_NAME=CMZ_PRESENT
+/FOLDER=::ROOTFOLDER
+/SEARCH_SUBFOLDERS=TRUE
+/FILE_MASK=*.cmz
+! /ALPHABETIZE=TRUE
+!/RETURN_FOLDER_NAMES=TRUE
+;
+
+Set_Pipeline_Parameter_From_Expression
+/PARAMETER_NAME=TEST
+/EXPRESSION=STRING_LENGTH("&::CMZ_PRESENT&")
+/AS_INTEGER=TRUE
+;
+
+Conditional_Statement
+/ITERATION_PARAMETER_NAME=ISMATCH
+/EXPRESSION=("&::TEST&"=="&0&")
+!/AS_INTEGER=TRUE
+;
+
+File_Open
+/FILE_NAME=::ROOTFOLDER&*.c3d
+! /SUFFIX=
+! /SET_PROMPT=File_Open
+! /FILTER=
+/ON_FILE_NOT_FOUND=CONTINUE
+;
+
+Set_Pipeline_Parameter_From_Expression
+/PARAMETER_NAME=TEMP
+/EXPRESSION=String_Left("&::ROOTFOLDER&",String_Length("&::ROOTFOLDER&")-1)
+/AS_INTEGER=FALSE
+;
+
+Set_Pipeline_Parameter_From_Expression
+/PARAMETER_NAME=CMZ_NAME
+/EXPRESSION=String_Mid("&::TEMP&",1+String_Reverse_Find("&::TEMP&","\"))
+/AS_INTEGER=FALSE
+;
+
+Select_Active_File
+/FILE_NAME=ALL_FILES
+! /QUERY=
+! /SUBJECT_TAGS=NO_SUBJECT
+;
+
+Set_Pipeline_Parameter_To_List_Of_Tags
+/PARAMETER_NAME=DEFAULT_TAGS
+! /GET_CURRENT_SELECTED_FILES=FALSE
+;
+
+Remove_Tags
+/MOTION_FILE_NAMES=ALL_FILES
+/TAGS=::DEFAULT_TAGS
+;
+
+Set_Pipeline_Parameter_To_List_Of_Tagged_Files
+/PARAMETER_NAME=LIST
+/TAG_NAME=ALL_FILES
+! /GET_CURRENT_SELECTED_FILES=false
+/USE_SHORT_FILENAMES=TRUE
+;
+
+! Tag c3ds based on filename
+! This assumes c3ds are named as subject_action_trial_pose_filt_0.c3d
+For_Each
+/ITERATION_PARAMETER_NAME=CURRENT_C3D
+!/ITERATION_PARAMETER_COUNT_NAME=COUNT
+/ITEMS=::LIST
+;
+
+Set_Pipeline_Parameter_From_Expression
+/PARAMETER_NAME=FIRST_INDEX
+/EXPRESSION=String_Find("&::CURRENT_C3D&","_",0)
+/AS_INTEGER=TRUE
+;
+
+Set_Pipeline_Parameter_From_Expression
+/PARAMETER_NAME=SECOND_INDEX
+/EXPRESSION=String_Find("&::CURRENT_C3D&","_",&::FIRST_INDEX+1&)
+/AS_INTEGER=TRUE
+;
+
+Set_Pipeline_Parameter_From_Expression
+/PARAMETER_NAME=SECOND_INDEX2
+/EXPRESSION=(&::SECOND_INDEX& - &::FIRST_INDEX&)-1
+/AS_INTEGER=TRUE
+;
+
+Set_Pipeline_Parameter_From_Expression
+/PARAMETER_NAME=THIRD_INDEX
+/EXPRESSION=String_Find("&::CURRENT_C3D&","_",&::SECOND_INDEX+1&)
+/AS_INTEGER=TRUE
+;
+
+Set_Pipeline_Parameter_From_Expression
+/PARAMETER_NAME=SUBJECT_NAME
+/EXPRESSION=String_LEFT("&::CURRENT_C3D&",String_Find("&::CURRENT_C3D&","_",0))
+/AS_INTEGER=FALSE
+;
+
+Set_Pipeline_Parameter_From_Expression
+/PARAMETER_NAME=ACTION
+/EXPRESSION=String_Mid("&::CURRENT_C3D&",&::FIRST_INDEX+1&,&::SECOND_INDEX2&)
+/AS_INTEGER=FALSE
+;
+
+Assign_Tags_To_Files
+/MOTION_FILE_NAMES=*&::CURRENT_C3D&
+!/QUERY=::CURRENT_C3D
+/TAGS=::ACTION
+;
+
+End_For_Each
+/ITERATION_PARAMETER_NAME=CURRENT_C3D
+;
+
+! Do stuff
+
+! select the files to do stuff on
+Select_Active_File
+/FILE_NAME=Walk+FastWalk+SlowWalk
+! /QUERY=
+;
+
+! determine_region_of_interest for segmentation
+Call_Script
+/SCRIPT_FILE_NAME=determine_region_of_interest.v3s
+/SCRIPT_PATH=::CALL_SCRIPT_SCRIPT_PATH
+;
+
+! determine gait events
+Call_Script
+/SCRIPT_FILE_NAME=gait_events_zeni_velocity.v3s
+/SCRIPT_PATH=::CALL_SCRIPT_SCRIPT_PATH
+;
+
+! compute_temporal_distance
+Call_Script
+/SCRIPT_FILE_NAME=compute_temporal_distance.v3s
+/SCRIPT_PATH=::CALL_SCRIPT_SCRIPT_PATH
+;
+
+! compute_model_based
+Call_Script
+/SCRIPT_FILE_NAME=compute_model_based.v3s
+/SCRIPT_PATH=::CALL_SCRIPT_SCRIPT_PATH
+;
+
+! open report template
+Open_Report_Template
+/REPORT_TEMPLATE=::CALL_SCRIPT_SCRIPT_PATH&report.rgt
+! /SET_PROMPT=Open report template
+;
+
+! location TAG
+Assign_Tags_To_Files
+/MOTION_FILE_NAMES=ALL_FILES
+! /QUERY=
+/TAGS=HMRL
+;
+
+! save the cmz
+File_Save_As
+/FILE_NAME=::ROOTFOLDER&::CMZ_NAME&.cmz
+! /SET_PROMPT=Save CMO file as
+! /SAVE_EMBEDDED_GRAPHICS=FALSE
+;
+
+! export_data_to_ascii_file
+Call_Script
+/SCRIPT_FILE_NAME=export_data_to_ascii_file.v3s
+/SCRIPT_PATH=::CALL_SCRIPT_SCRIPT_PATH
+;
+
+! Clears the workspace before moving on to the next subject
+File_New
+;
+
+! end for loop ISMATCH
+Conditional_Statement_End
+/ITERATION_PARAMETER_NAME=ISMATCH
+;
+
+! end for loop ROOTFOLDER
+End_For_Each
+/ITERATION_PARAMETER_NAME=ROOTFOLDER
+;
+
